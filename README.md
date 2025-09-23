@@ -53,8 +53,12 @@ karyamate/
 ├─ .gitignore
 ├─ README.md
 └─ requirements.txt        # Global dependencies
+<<<<<<< HEAD
 ```
 
+=======
+'''
+>>>>>>> e06fb50cb2c8ce87cc876d8996a2a69e79cc399a
 ---
 
 ## 🚀 Getting Started
@@ -118,4 +122,18 @@ streamlit run frontend.py
 
 ---
 
+<<<<<<< HEAD
 ✨ **KaryaMate — Your Smart Companion for Tasks**
+=======
+✅ Frontend integration with backend
+
+🔜 User authentication & task CRUD
+
+🔜 API documentation (Swagger/OpenAPI)
+
+🔜 Deployment (Render/Heroku + Streamlit Cloud)
+
+
+
+✨ KaryaMate — Your Smart Companion for Tasks.
+>>>>>>> e06fb50cb2c8ce87cc876d8996a2a69e79cc399a
