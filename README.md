@@ -57,7 +57,7 @@ karyamate/
 
 ---
 
-## 🚀 Getting Started
+### 🚀 Getting Started
 
 ### 1. Clone the Repository
 ```bash
@@ -118,7 +118,6 @@ streamlit run frontend.py
 
 ---
 
-<<<<<<< HEAD
 ✨ **KaryaMate — Your Smart Companion for Tasks**
 =======
 ✅ Frontend integration with backend
