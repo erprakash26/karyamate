@@ -12,7 +12,7 @@ Together, it reflects the app’s purpose: **your smart companion for tasks**.
 ---
 
 ## ⚡ Features
-- 🔑 User registration & login (with JWT authentication)  
+- 🔑 User registration & login (JWT authentication)  
 - 📝 Create, update, and delete tasks  
 - ✅ Mark tasks as completed or pending  
 - 🔍 Search and filter tasks  
@@ -33,84 +33,89 @@ Together, it reflects the app’s purpose: **your smart companion for tasks**.
 ---
 
 ## 📂 Project Structure
+```text
 karyamate/
-├─ backend/ → Flask backend (API, DB, Auth)
-│ ├─ app.py → Main Flask app
-│ ├─ routes.py → API routes
-│ ├─ models.py → Database models
-│ ├─ config.py → Configurations
-│ └─ requirements.txt → Backend dependencies
+├─ backend/                # Flask backend (API, DB, Auth)
+│  ├─ app.py               # Main Flask app
+│  ├─ routes.py            # API routes
+│  ├─ models.py            # Database models
+│  ├─ config.py            # Configurations
+│  └─ requirements.txt     # Backend dependencies
 │
-├─ frontend/ → Streamlit frontend
-│ ├─ frontend.py → Main UI file
-│ └─ assets/ → Logo + favicon
+├─ frontend/               # Streamlit frontend
+│  ├─ frontend.py          # Main UI file
+│  └─ assets/              # Logo + favicon
 │
-├─ docs/ → Documentation
-│ ├─ mockups/ → Wireframes
-│ └─ api/ → OpenAPI specification
+├─ docs/                   # Documentation
+│  ├─ mockups/             # Wireframes
+│  └─ api/                 # OpenAPI specification
 │
 ├─ .gitignore
 ├─ README.md
-└─ requirements.txt → Global dependencies
-
-
+└─ requirements.txt        # Global dependencies
+```
 
 ---
 
 ## 🚀 Getting Started
 
-1. Clone the Repository
-
+### 1. Clone the Repository
+```bash
 git clone https://github.com/<your-username>/karyamate.git
 cd karyamate
-2. Create Virtual Environment
+```
 
+### 2. Create Virtual Environment
+```bash
 python -m venv .venv
 .venv\Scripts\activate   # Windows
+```
 
-3. Install Dependencies
-
+### 3. Install Dependencies
+```bash
 pip install -r requirements.txt
-🖥️ Running the Application
-Start Backend (Flask API)
+```
 
+---
+
+## 🖥️ Running the Application
+
+### Start Backend (Flask API)
+```bash
 cd backend
 flask run
-➡ Visit http://127.0.0.1:5000/health
+```
+➡ Visit [http://127.0.0.1:5000/health](http://127.0.0.1:5000/health)  
 Expected response:
-
-json
-Copy code
+```json
 {"status": "ok"}
+```
 
-Start Frontend (Streamlit UI)
+### Start Frontend (Streamlit UI)
 Open a new terminal:
-
-
+```bash
 cd frontend
 streamlit run frontend.py
-➡ A browser window will open showing KaryaMate with your logo and a Check Backend Status button.
+```
+➡ A browser window will open showing **KaryaMate** with your logo and a *Check Backend Status* button.
 
-🧪 Testing
-Use Postman to test API endpoints (/auth/register, /auth/login, /tasks).
+---
 
-Check docs/api/openapi.yaml for API contract and schema.
+## 🧪 Testing
+- Use **Postman** to test API endpoints (`/auth/register`, `/auth/login`, `/tasks`).  
+- Check `docs/api/openapi.yaml` for API contract and schema.  
+- Extend with Swagger UI integration later.  
 
-Extend with Swagger UI integration later.
+---
 
-📜 Roadmap
-✅ Basic project setup
+## 📜 Roadmap
+- ✅ Basic project setup  
+- ✅ Backend health check  
+- ✅ Frontend integration with backend  
+- 🔜 User authentication & task CRUD  
+- 🔜 API documentation (Swagger/OpenAPI)  
+- 🔜 Deployment (Render/Heroku + Streamlit Cloud)  
 
-✅ Backend health check
+---
 
-✅ Frontend integration with backend
-
-🔜 User authentication & task CRUD
-
-🔜 API documentation (Swagger/OpenAPI)
-
-🔜 Deployment (Render/Heroku + Streamlit Cloud)
-
-
-
-✨ KaryaMate — Your Smart Companion for Tasks.
+✨ **KaryaMate — Your Smart Companion for Tasks**
