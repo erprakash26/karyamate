@@ -1,0 +1,14 @@
+# Backend
+flask
+flask_sqlalchemy
+flask_jwt_extended
+
+# Frontend
+streamlit
+
+# API Docs
+flasgger
+
+# Utils
+python-dotenv
+requests
