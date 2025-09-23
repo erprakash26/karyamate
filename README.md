@@ -53,12 +53,8 @@ karyamate/
 ├─ .gitignore
 ├─ README.md
 └─ requirements.txt        # Global dependencies
-<<<<<<< HEAD
-```
 
-=======
-'''
->>>>>>> e06fb50cb2c8ce87cc876d8996a2a69e79cc399a
+
 ---
 
 ## 🚀 Getting Started
@@ -136,4 +132,4 @@ streamlit run frontend.py
 
 
 ✨ KaryaMate — Your Smart Companion for Tasks.
->>>>>>> e06fb50cb2c8ce87cc876d8996a2a69e79cc399a
+
