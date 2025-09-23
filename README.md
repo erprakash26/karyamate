@@ -12,7 +12,7 @@ Together, it reflects the app’s purpose: **your smart companion for tasks**.
 ---
 
 ## ⚡ Features
-- 🔑 User registration & login (with JWT authentication)  
+- 🔑 User registration & login (JWT authentication)  
 - 📝 Create, update, and delete tasks  
 - ✅ Mark tasks as completed or pending  
 - 🔍 Search and filter tasks  
@@ -33,26 +33,26 @@ Together, it reflects the app’s purpose: **your smart companion for tasks**.
 ---
 
 ## 📂 Project Structure
+```text
 karyamate/
-├─ backend/ # Flask backend (API, DB, Auth)
-│ ├─ app.py # Main Flask app
-│ ├─ routes.py # API routes
-│ ├─ models.py # Database models
-│ ├─ config.py # Configurations
-│ └─ requirements.txt # Backend dependencies
+├─ backend/                # Flask backend (API, DB, Auth)
+│  ├─ app.py               # Main Flask app
+│  ├─ routes.py            # API routes
+│  ├─ models.py            # Database models
+│  ├─ config.py            # Configurations
+│  └─ requirements.txt     # Backend dependencies
 │
-├─ frontend/ # Streamlit frontend
-│ ├─ frontend.py # Main UI file
-│ └─ assets/ # Logo + favicon
+├─ frontend/               # Streamlit frontend
+│  ├─ frontend.py          # Main UI file
+│  └─ assets/              # Logo + favicon
 │
-├─ docs/ # Documentation
-├─ mockups/ # Wireframes
-├─ api/ # OpenAPI specification
+├─ docs/                   # Documentation
+│  ├─ mockups/             # Wireframes
+│  └─ api/                 # OpenAPI specification
 │
 ├─ .gitignore
 ├─ README.md
-└─ requirements.txt # Global dependencies
-
+└─ requirements.txt        # Global dependencies
 
 ---
 
