@@ -1,0 +1,5 @@
+3.11.8
+
+
+#cd karyamate
+# python -m backend.app
