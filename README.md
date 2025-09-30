@@ -34,6 +34,7 @@ Together, it reflects the app’s purpose: **your smart companion for tasks**.
 
 ## 📂 Project Structure
 
+```text
 karyamate/
 ├─ backend/                     # Flask backend (API, DB, Auth, Config)
 │  ├─ app.py                    # Main Flask application entry point
