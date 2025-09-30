@@ -109,7 +109,7 @@ flask run
 ```
 #option 2 
 ```bash
-cd backend
+cd karyamate
 python -m backend.app
 ```
 ➡ Visit [http://127.0.0.1:5000/health](http://127.0.0.1:5000/health)  
