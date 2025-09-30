@@ -92,6 +92,7 @@ cd karyamate
 ```bash
 git clone https://github.com/<your-username>/karyamate.git
 cd karyamate
+```
 ### 2. Create Virtual Environment
 ```bash
 python -m venv .venv
