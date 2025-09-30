@@ -55,6 +55,49 @@ karyamate/
 └─ requirements.txt        # Global dependencies
 
 
+
+
+karyamate/
+├── backend/
+│   ├── instance/
+│   │   └── db.sqlite3
+│   ├── routes/
+│   │   ├── __init__.py
+│   │   ├── auth.py
+│   │   └── tasks.py
+│   ├── app.py
+│   ├── config.py
+│   ├── extensions.py
+│   ├── models.py
+│   ├── utils.py
+│   ├── routes.py
+│   ├── Procfile
+│   ├── render.yaml
+│   ├── requirements.txt
+│   └── runtime.txt
+│
+├── docs/
+│   ├── api/
+│   │   └── openapi.yaml
+│   └── mockups/
+│       └── Wireframes.md
+│
+├── frontend/
+│   ├── assets/
+│   │   ├── favicon.ico
+│   │   └── logo.png
+│   ├── pages/
+│   │   ├── 1_Login.py
+│   │   └── 2_Dashboard.py
+│   ├── frontend.py
+│   └── home.py
+│
+├── .gitignore
+├── LICENSE
+├── README.md
+├── requirements.txt
+└── run_backend.bat
+
 ---
 
 ### 🚀 Getting Started
