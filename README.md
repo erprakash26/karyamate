@@ -28,8 +28,8 @@ Together, it reflects the app’s purpose: **your smart companion for tasks**.
 - **Docs**: Swagger/OpenAPI (API documentation)  
 - **Testing**: Postman  
 - **Version Control**: Git + GitHub  
-- **Deployment**: Render/Heroku (backend), Streamlit Cloud (frontend)  
-
+- **Deployment**: Render/Heroku (backend), Streamlit Cloud (frontend)
+  
 ---
 
 ## 📂 Project Structure
@@ -64,7 +64,7 @@ karyamate/
 │  │   ├─ favicon.ico           # App favicon
 │  │   └─ logo.png              # App logo
 │
-├─ docs/                        # Documentation
+├─ docs/                        # Documentation part
 │  ├─ api/                      # API specifications
 │  │   └─ openapi.yaml          # OpenAPI schema
 │  └─ mockups/                  # Design docs
