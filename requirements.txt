@@ -12,3 +12,7 @@ flasgger
 # Utils
 python-dotenv
 requests
+
+# server
+gunicorn==23.0.0
+
