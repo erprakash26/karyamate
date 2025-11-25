@@ -1,18 +1,21 @@
 # Backend
-flask
-flask_sqlalchemy
-flask_jwt_extended
+flask==3.1.2
+flask_sqlalchemy==3.1.1
+flask_jwt_extended==4.7.1
+flask-cors==4.0.1
 
-# Frontend
-streamlit
+# Frontend (optional for Render, but safe to include)
+streamlit==1.51.0
 
-# API Docs
-flasgger
+# API Documentation (Swagger)
+flasgger==0.9.7.1
 
 # Utils
-python-dotenv
-requests
+python-dotenv==1.2.1
+requests==2.32.5
 
-# server
+# Database (Render Postgres)
+psycopg2-binary==2.9.9
+
+# Server for deployment
 gunicorn==23.0.0
-
