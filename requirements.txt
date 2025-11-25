@@ -4,17 +4,17 @@ flask_sqlalchemy==3.1.1
 flask_jwt_extended==4.7.1
 flask-cors==4.0.1
 
-# Frontend (optional for Render, but safe to include)
+# Frontend (for Streamlit UI)
 streamlit==1.51.0
 
-# API Documentation (Swagger)
+# API Documentation (Swagger / Flasgger)
 flasgger==0.9.7.1
 
 # Utils
 python-dotenv==1.2.1
 requests==2.32.5
 
-# Database (Render Postgres)
+# Database driver for PostgreSQL on Render
 psycopg2-binary==2.9.9
 
 # Server for deployment
