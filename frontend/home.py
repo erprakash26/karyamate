@@ -1,5 +1,13 @@
 import streamlit as st
 import requests
+from pathlib import Path
+
+# Get the directory where home.py is located
+THIS_DIR = Path(__file__).parent
+
+# Build the absolute path to logo.png
+LOGO_PATH = THIS_DIR / "assets" / "logo.png"
+FAVICON_PATH = THIS_DIR / "assets" / "favicon.ico"
 
 # ------------------- Config -------------------
 # Switch this when testing locally vs cloud
@@ -10,7 +18,7 @@ API_BASE_URL = "https://karyamate-api.onrender.com"
 # ------------------- Page Config -------------------
 st.set_page_config(
     page_title="KaryaMate",
-    page_icon="frontend/assets/favicon.ico",
+    page_icon=str(FAVICON_PATH),
     layout="wide"
 )
 
@@ -84,7 +92,7 @@ st.markdown(
 # ------------------- Hero Section -------------------
 col1, col2 = st.columns([1, 5])
 with col1:
-    st.image("frontend/assets/logo.png", width=400)
+    st.image(str(LOGO_PATH), width=400)
 with col2:
     st.markdown(
         """

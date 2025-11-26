@@ -1,16 +1,20 @@
 import streamlit as st
 import requests
 from datetime import datetime, date
+from pathlib import Path
+
+# ----- Absolute path to favicon -----
+THIS_DIR = Path(__file__).parent
+FAVICON_PATH = THIS_DIR / "assets" / "favicon.ico"
 
 # ------------------- Backend Config -------------------
-# Deployed API
 API_BASE_URL = "https://karyamate-api.onrender.com"
 # For local testing, you can temporarily use:
 # API_BASE_URL = "http://127.0.0.1:5000"
 
 st.set_page_config(
     page_title="KaryaMate - Dashboard",
-    page_icon="assets/favicon.ico",
+    page_icon=str(FAVICON_PATH),
     layout="wide",
 )
 
