@@ -38,6 +38,12 @@ def create_app():
     @app.route("/health", methods=["GET"])
     def health():
         return jsonify({"status": "ok"})
+    
+    #checking 
+
+    @app.route("/", methods=["GET"])
+    def home():
+        return jsonify({"message": "KaryaMate API is running"}), 200
 
     # Error handlers
     @app.errorhandler(400)
