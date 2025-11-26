@@ -236,6 +236,6 @@ st.markdown(
 
 # ------------------- Page Routing -------------------
 if st.session_state.page == "login":
-    st.switch_page("frontend/pages/1_login.py")
+    st.switch_page("pages/1_login.py")
 elif st.session_state.page == "dashboard":
-    st.switch_page("frontend/pages/2_dashboard.py")
+    st.switch_page("pages/2_dashboard.py")
