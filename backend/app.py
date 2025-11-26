@@ -34,6 +34,10 @@ def create_app():
     # Register blueprints (auth, tasks, …)
     register_routes(app)
 
+    # NEW: ensure tables exist (runs on Render + locally)
+    with app.app_context():
+        db.create_all()
+
     # -------------------------------------------------
     # Routes WITH Swagger docstrings
     # -------------------------------------------------
