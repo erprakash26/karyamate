@@ -58,8 +58,8 @@ karyamate/
 │  ├─ frontend.py               # Main Streamlit app
 │  ├─ home.py                   # Homepage UI
 │  ├─ pages/                    # Streamlit multi-page setup
-│  │   ├─ 1_Login.py            # Login/Register page
-│  │   └─ 2_Dashboard.py        # Dashboard page
+│  │   ├─ 1_login.py            # Login/Register page
+│  │   └─ 2_dashboard.py        # Dashboard page
 │  ├─ assets/                   # Static assets
 │  │   ├─ favicon.ico           # App favicon
 │  │   └─ logo.png              # App logo
