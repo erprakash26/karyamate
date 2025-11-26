@@ -10,7 +10,7 @@ API_BASE_URL = "https://karyamate-api.onrender.com"
 # ------------------- Page Config -------------------
 st.set_page_config(
     page_title="KaryaMate",
-    page_icon="assets/favicon.ico",
+    page_icon="frontend/assets/favicon.ico",
     layout="wide"
 )
 
@@ -84,7 +84,7 @@ st.markdown(
 # ------------------- Hero Section -------------------
 col1, col2 = st.columns([1, 5])
 with col1:
-    st.image("assets/logo.png", width=400)
+    st.image("frontend/assets/logo.png", width=400)
 with col2:
     st.markdown(
         """
