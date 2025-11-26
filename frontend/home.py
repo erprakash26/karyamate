@@ -5,12 +5,12 @@ from pathlib import Path
 # Get the directory where home.py is located
 THIS_DIR = Path(__file__).parent
 
-# Build the absolute path to logo.png
-LOGO_PATH = THIS_DIR / "assets" / "logo.png"
-FAVICON_PATH = THIS_DIR / "assets" / "favicon.ico"
+# Build the absolute paths
+ASSETS_DIR = THIS_DIR / "assets"
+LOGO_PATH = ASSETS_DIR / "logo.png"
+FAVICON_PATH = ASSETS_DIR / "favicon.ico"
 
 # ------------------- Config -------------------
-# Switch this when testing locally vs cloud
 API_BASE_URL = "https://karyamate-api.onrender.com"
 # For local testing:
 # API_BASE_URL = "http://127.0.0.1:5000"

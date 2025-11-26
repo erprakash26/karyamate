@@ -12,11 +12,13 @@ API_BASE_URL = "https://karyamate-api.onrender.com"
 # For local testing, you can temporarily use:
 # API_BASE_URL = "http://127.0.0.1:5000"
 
+
 st.set_page_config(
     page_title="KaryaMate - Dashboard",
     page_icon=str(FAVICON_PATH),
     layout="wide",
 )
+
 
 st.title("📋 Task Dashboard")
 st.write("View and manage your tasks powered by the live KaryaMate API.")
