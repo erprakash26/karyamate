@@ -1,6 +1,12 @@
 import streamlit as st
 import requests
 
+# ------------------- Config -------------------
+# Switch this when testing locally vs cloud
+API_BASE_URL = "https://karyamate-api.onrender.com"
+# For local testing:
+# API_BASE_URL = "http://127.0.0.1:5000"
+
 # ------------------- Page Config -------------------
 st.set_page_config(
     page_title="KaryaMate",
@@ -8,11 +14,15 @@ st.set_page_config(
     layout="wide"
 )
 
-# ------------------- Session State Navigation -------------------
+# ------------------- Session State -------------------
 if "page" not in st.session_state:
     st.session_state.page = "home"
 
-def go_to(page):
+# JWT token is expected to be set by pages/1_login.py
+if "access_token" not in st.session_state:
+    st.session_state.access_token = None
+
+def go_to(page: str):
     st.session_state.page = page
     st.rerun()
 
@@ -60,6 +70,12 @@ st.markdown(
         color: gray;
         font-size: 0.9rem;
     }
+    .api-box {
+        border: 2px solid red;
+        padding: 1rem;
+        border-radius: 10px;
+        margin-top: 1rem;
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -76,7 +92,6 @@ with col2:
         """,
         unsafe_allow_html=True
     )
-# <h1 style="margin-bottom:0;">KaryaMate</h1>
 
 st.markdown("---")
 
@@ -135,7 +150,7 @@ st.subheader("🔍 Quick Demo")
 
 if st.button("Check Backend Status", use_container_width=True):
     try:
-        response = requests.get("http://127.0.0.1:5000/health")
+        response = requests.get(f"{API_BASE_URL}/health", timeout=10)
         if response.status_code == 200:
             st.success("✅ Backend is running")
         else:
@@ -148,6 +163,56 @@ with colX:
     st.button("🔑 Go to Login Page", use_container_width=True, on_click=lambda: go_to("login"))
 with colY:
     st.button("📋 View Task Dashboard", use_container_width=True, on_click=lambda: go_to("dashboard"))
+
+# ------------------- API-Driven Preview (RED BOX AREA) -------------------
+st.subheader("🟥 API-Powered Task Preview")
+
+st.markdown(
+    """
+    This area is driven by live API data from:
+    <br><b>GET /api/tasks</b> (Authorization: Bearer &lt;JWT&gt;)  
+    """,
+    unsafe_allow_html=True,
+)
+
+with st.container():
+    st.markdown('<div class="api-box">', unsafe_allow_html=True)
+
+    token = st.session_state.access_token
+
+    if not token:
+        st.info("Login first (🔑 Login Page) to preview your tasks here.")
+    else:
+        headers = {"Authorization": f"Bearer {token}"}
+        try:
+            with st.spinner("Loading tasks from API..."):
+                resp = requests.get(f"{API_BASE_URL}/api/tasks", headers=headers, timeout=10)
+
+            if resp.status_code == 200:
+                tasks = resp.json()
+                if tasks:
+                    st.write("Tasks loaded from API:")
+
+                    # Simple table view
+                    for t in tasks:
+                        st.markdown(
+                            f"""
+                            **{t.get('title', '(no title)')}**  
+                            • Description: {t.get('description') or '-'}  
+                            • Completed: {'✅' if t.get('completed') else '❌'}  
+                            • Priority: {t.get('priority') or '-'}  
+                            """
+                        )
+                        st.markdown("---")
+                else:
+                    st.warning("No tasks found. Try creating one from the Dashboard.")
+            else:
+                st.error(f"Failed to load tasks. Status code: {resp.status_code}")
+                st.text(resp.text)
+        except Exception as e:
+            st.error(f"Error while calling /api/tasks: {e}")
+
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # ------------------- Tagline -------------------
 st.markdown(
@@ -171,6 +236,6 @@ st.markdown(
 
 # ------------------- Page Routing -------------------
 if st.session_state.page == "login":
-    st.switch_page("pages/1_login.py")   # assumes login.py is inside /pages
+    st.switch_page("pages/1_login.py")
 elif st.session_state.page == "dashboard":
     st.switch_page("pages/2_dashboard.py")
