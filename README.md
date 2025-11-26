@@ -55,15 +55,14 @@ karyamate/
 │  └─ runtime.txt               # Runtime version info
 │
 ├─ frontend/                    # Streamlit frontend
-│  ├─ frontend.py               # Main Streamlit app
-│  ├─ home.py                   # Homepage UI
+│  ├─ home.py                   # Homepage UI (Main Streamlit app)
 │  ├─ pages/                    # Streamlit multi-page setup
 │  │   ├─ 1_login.py            # Login/Register page
 │  │   └─ 2_dashboard.py        # Dashboard page
 │  ├─ assets/                   # Static assets
 │  │   ├─ favicon.ico           # App favicon
 │  │   └─ logo.png              # App logo
-│
+│  ├─ requirements              # frontend dependencies
 ├─ docs/                        # Documentation part
 │  ├─ api/                      # API specifications
 │  │   └─ openapi.yaml          # OpenAPI schema
