@@ -24,21 +24,22 @@ st.set_page_config(
 st.title("📋 KaryaMate Task Dashboard")
 st.write("View and manage your tasks powered by the live KaryaMate API.")
 
-# ------------------- Top Navigation -------------------
-nav_col1, nav_col2, nav_col3 = st.columns([6, 1, 1])
+# ------------------- Show Home + Logout buttons (ONLY AFTER LOGIN) -------------------
+top_left, top_right = st.columns([2, 1])
+with top_left:
+    st.info("You are logged in. Manage your tasks below.")
+with top_right:
+    home_btn = st.button("🏠 Home", use_container_width=True)
+    logout_btn = st.button("🚪 Logout", use_container_width=True)
 
-with nav_col2:
-    if st.button("🏠 Home", use_container_width=True):
-        st.session_state.page = "home"
-        st.switch_page("../home.py")  # go back to main home
+# Handle button actions
+if home_btn:
+    st.switch_page("home.py")      # go back to home page
 
-with nav_col3:
-    if st.button("🚪 Logout", use_container_width=True):
-        for key in ["access_token", "page"]:
-            if key in st.session_state:
-                del st.session_state[key]
-        st.success("Logged out successfully!")
-        st.switch_page("1_login.py")
+if logout_btn:
+    st.session_state.clear()       # remove all session data
+    st.success("You have been logged out.")
+    st.switch_page("home.py")
 
 
 # ------------------- Auth Guard -------------------
