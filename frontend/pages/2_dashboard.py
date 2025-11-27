@@ -236,7 +236,7 @@ with col_right:
         ]
         st.dataframe(table_rows, use_container_width=True, hide_index=True)
 
-        st.markdown("### ✏️ Edit / ✅ Complete / 🗑 Delete")
+        st.markdown("### ✏️ Update Tasks(Edit/Complete/Delete")
 
         # Map task IDs to task objects
         task_ids = [t["id"] for t in tasks]
