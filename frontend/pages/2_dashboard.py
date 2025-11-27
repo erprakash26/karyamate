@@ -286,7 +286,9 @@ with col_right:
                 if resp is not None and resp.status_code == 200:
                     st.success("Task updated successfully ✅")
                     fetch_tasks(status=status_filter.lower())
-                    st.experimental_rerun()
+                    #st.experimental_rerun()
+                    st.rerun()
+
                 elif resp is not None:
                     st.error(f"Failed to update task ({resp.status_code}): {resp.text}")
 
@@ -296,7 +298,10 @@ with col_right:
                 if resp is not None and resp.status_code == 200:
                     st.success("Task marked as completed 🎉")
                     fetch_tasks(status=status_filter.lower())
-                    st.experimental_rerun()
+                    #st.experimental_rerun()
+                    st.rerun()
+
+                    
                 elif resp is not None:
                     st.error(
                         f"Failed to mark task completed ({resp.status_code}): {resp.text}"
@@ -308,7 +313,9 @@ with col_right:
                 if resp is not None and resp.status_code in (200, 204):
                     st.success("Task deleted 🗑")
                     fetch_tasks(status=status_filter.lower())
-                    st.experimental_rerun()
+                    #st.experimental_rerun()
+                    st.rerun()
+
                 elif resp is not None:
                     st.error(f"Failed to delete task ({resp.status_code}): {resp.text}")
 
