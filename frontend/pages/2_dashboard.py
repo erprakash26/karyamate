@@ -17,6 +17,8 @@ st.set_page_config(
 API_BASE_URL = st.session_state.get(
     "API_BASE_URL",
     "https://karyamate-api.onrender.com",  # deployed backend
+# For local testing, you can temporarily use:
+# API_BASE_URL = "http://127.0.0.1:5000"
 )
 
 # ==================== Auth Guard ====================
@@ -155,13 +157,19 @@ def delete_task(task_id):
 st.title("📋 KaryaMate Task Dashboard")
 st.write("View and manage your tasks powered by the live KaryaMate API.")
 
-header_left, header_right = st.columns([2, 1])
+header_left, header_right = st.columns([3, 1])
+
 with header_left:
     st.info("You are logged in. Manage your tasks below.")
-with header_right:
-    home_btn = st.button("🏠 Home", use_container_width=True)
-    logout_btn = st.button("🚪 Logout", use_container_width=True)
 
+with header_right:
+    btn_col1, btn_col2 = st.columns(2)
+    with btn_col1:
+        home_btn = st.button("🏠 Home", use_container_width=True)
+    with btn_col2:
+        logout_btn = st.button("🚪 Logout", use_container_width=True)
+
+# Handle nav buttons
 if home_btn:
     st.switch_page("home.py")
 
@@ -247,12 +255,15 @@ with col_right:
             "Description", value=selected_task.get("description") or ""
         )
 
+        # Normalize priority to title-case ("Low", "Medium", "High")
+        current_priority = (selected_task.get("priority") or "Medium").title()
+        if current_priority not in ["Low", "Medium", "High"]:
+            current_priority = "Medium"
+
         edit_priority = st.selectbox(
             "Priority",
             ["Low", "Medium", "High"],
-            index=["Low", "Medium", "High"].index(
-                (selected_task.get("priority") or "Medium").title()
-            ),
+            index=["Low", "Medium", "High"].index(current_priority),
         )
 
         existing_due = None
@@ -286,9 +297,7 @@ with col_right:
                 if resp is not None and resp.status_code == 200:
                     st.success("Task updated successfully ✅")
                     fetch_tasks(status=status_filter.lower())
-                    #st.experimental_rerun()
                     st.rerun()
-
                 elif resp is not None:
                     st.error(f"Failed to update task ({resp.status_code}): {resp.text}")
 
@@ -298,10 +307,7 @@ with col_right:
                 if resp is not None and resp.status_code == 200:
                     st.success("Task marked as completed 🎉")
                     fetch_tasks(status=status_filter.lower())
-                    #st.experimental_rerun()
                     st.rerun()
-
-                    
                 elif resp is not None:
                     st.error(
                         f"Failed to mark task completed ({resp.status_code}): {resp.text}"
@@ -313,9 +319,7 @@ with col_right:
                 if resp is not None and resp.status_code in (200, 204):
                     st.success("Task deleted 🗑")
                     fetch_tasks(status=status_filter.lower())
-                    #st.experimental_rerun()
                     st.rerun()
-
                 elif resp is not None:
                     st.error(f"Failed to delete task ({resp.status_code}): {resp.text}")
 
