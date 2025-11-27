@@ -24,6 +24,23 @@ st.set_page_config(
 st.title("📋 KaryaMate Task Dashboard")
 st.write("View and manage your tasks powered by the live KaryaMate API.")
 
+# ------------------- Top Navigation -------------------
+nav_col1, nav_col2, nav_col3 = st.columns([6, 1, 1])
+
+with nav_col2:
+    if st.button("🏠 Home", use_container_width=True):
+        st.session_state.page = "home"
+        st.switch_page("../home.py")  # go back to main home
+
+with nav_col3:
+    if st.button("🚪 Logout", use_container_width=True):
+        for key in ["access_token", "page"]:
+            if key in st.session_state:
+                del st.session_state[key]
+        st.success("Logged out successfully!")
+        st.switch_page("1_login.py")
+
+
 # ------------------- Auth Guard -------------------
 if "access_token" not in st.session_state or not st.session_state.access_token:
     st.warning(
