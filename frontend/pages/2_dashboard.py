@@ -3,17 +3,9 @@ import requests
 from datetime import datetime, date
 from pathlib import Path
 
-# ----- Paths / favicon -----
-THIS_DIR = Path(__file__).parent
-FAVICON_PATH = THIS_DIR.parent / "assets" / "favicon.ico"
-
-# ------------------- Backend Config -------------------
-API_BASE_URL = st.session_state.get(
-    "API_BASE_URL",
-    "https://karyamate-api.onrender.com"   # fallback to deployed API
-    # For local testing, you can temporarily use:
-    # API_BASE_URL = "http://127.0.0.1:5000"
-)
+# ==================== Page Config ====================
+THIS_DIR = Path(__file__).parent.parent  # go up from /pages to /frontend
+FAVICON_PATH = THIS_DIR / "assets" / "favicon.ico"
 
 st.set_page_config(
     page_title="KaryaMate - Dashboard",
@@ -21,89 +13,85 @@ st.set_page_config(
     layout="wide",
 )
 
-st.title("📋 KaryaMate Task Dashboard")
-st.write("View and manage your tasks powered by the live KaryaMate API.")
+# ==================== Backend Config ====================
+API_BASE_URL = st.session_state.get(
+    "API_BASE_URL",
+    "https://karyamate-api.onrender.com",  # deployed backend
+)
 
-# ------------------- Show Home + Logout buttons (ONLY AFTER LOGIN) -------------------
-top_left, top_right = st.columns([2, 1])
-with top_left:
-    st.info("You are logged in. Manage your tasks below.")
-with top_right:
-    home_btn = st.button("🏠 Home", use_container_width=True)
-    logout_btn = st.button("🚪 Logout", use_container_width=True)
-
-# Handle button actions
-if home_btn:
-    st.switch_page("home.py")      # go back to home page
-
-if logout_btn:
-    st.session_state.clear()       # remove all session data
-    st.success("You have been logged out.")
-    st.switch_page("home.py")
-
-
-# ------------------- Auth Guard -------------------
+# ==================== Auth Guard ====================
+# If there is no access token, block the page completely
 if "access_token" not in st.session_state or not st.session_state.access_token:
+    st.title("📋 KaryaMate Task Dashboard")
+    st.write("View and manage your tasks powered by the live KaryaMate API.")
     st.warning(
         "You must be logged in to view your tasks. "
         "Go back to the **Login** page from the side menu."
     )
     st.stop()
 
+# We *do* have a token → from here on we are logged in
 TOKEN = st.session_state.access_token
 HEADERS = {"Authorization": f"Bearer {TOKEN}"}
 
-# ------------------- API Helpers -------------------
+# Ensure tasks list exists in session
+if "tasks" not in st.session_state:
+    st.session_state.tasks = []
+
+
+# ==================== Helper Functions ====================
 def fetch_tasks(status: str = "all"):
     """
     Call GET /api/tasks with optional ?status=open|completed|all
+    and store result into st.session_state.tasks.
     """
     try:
         params = {}
         if status in ("open", "completed"):
             params["status"] = status
 
-        res = requests.get(
+        resp = requests.get(
             f"{API_BASE_URL}/api/tasks",
             headers=HEADERS,
             params=params,
             timeout=10,
         )
     except Exception as e:
-        return None, f"❌ Error contacting API: {e}"
+        st.error(f"❌ Failed to fetch tasks: {e}")
+        return
 
-    if res.status_code == 200:
+    if resp.status_code == 200:
         try:
-            return res.json(), None
+            st.session_state.tasks = resp.json()
         except Exception as e:
-            return None, f"❌ Could not parse tasks response: {e}"
-    elif res.status_code == 401:
-        return None, "❌ Unauthorized (401). Please log in again."
+            st.error(f"❌ Could not parse tasks response: {e}")
+    elif resp.status_code == 401:
+        st.error("Unauthorized (401). Your session may have expired. Please log in again.")
     else:
         try:
-            msg = res.json().get("message", res.text)
+            msg = resp.json().get("message", resp.text)
         except Exception:
-            msg = res.text
-        return None, f"❌ Could not load tasks ({res.status_code}): {msg}"
+            msg = resp.text
+        st.error(f"❌ Could not load tasks ({resp.status_code}): {msg}")
 
 
 def create_task(title: str, description: str, priority: str, due_date: date | None):
+    """Call POST /api/tasks to create a new task."""
     payload = {
         "title": title,
         "description": description or "",
         "completed": False,
-        "priority": priority or "medium",
+        "priority": priority,
         "due_date": None,
     }
 
     if due_date:
-        # backend expects ISO datetime string
         payload["due_date"] = datetime.combine(
             due_date, datetime.min.time()
         ).isoformat()
 
     try:
-        res = requests.post(
+        resp = requests.post(
             f"{API_BASE_URL}/api/tasks",
             headers=HEADERS,
             json=payload,
@@ -111,31 +99,31 @@ def create_task(title: str, description: str, priority: str, due_date: date | No
         )
     except Exception as e:
         st.error(f"❌ Failed to create task: {e}")
-        return None
+        return
 
-    return res
+    if resp.status_code == 201:
+        st.success("✅ Task created successfully!")
+        fetch_tasks()  # refresh
+    else:
+        try:
+            msg = resp.json().get("message", resp.text)
+        except Exception:
+            msg = resp.text
+        st.error(f"❌ Could not create task ({resp.status_code}): {msg}")
 
 
-def update_task(task_id, title=None, description=None, priority=None, completed=None, due_date=None):
+def update_task(task_id, **fields):
+    """Call PUT /api/tasks/<id> with only the changed fields."""
     payload = {}
-    if title is not None:
-        payload["title"] = title
-    if description is not None:
-        payload["description"] = description
-    if priority is not None:
-        payload["priority"] = priority
-    if completed is not None:
-        payload["completed"] = completed
-    if due_date is not None:
-        if isinstance(due_date, date):
-            payload["due_date"] = datetime.combine(
-                due_date, datetime.min.time()
-            ).isoformat()
-        else:
-            payload["due_date"] = due_date
+    for key, value in fields.items():
+        if value is not None:
+            if key == "due_date" and isinstance(value, date):
+                payload[key] = datetime.combine(value, datetime.min.time()).isoformat()
+            else:
+                payload[key] = value
 
     try:
-        res = requests.put(
+        resp = requests.put(
             f"{API_BASE_URL}/api/tasks/{task_id}",
             headers=HEADERS,
             json=payload,
@@ -145,12 +133,13 @@ def update_task(task_id, title=None, description=None, priority=None, completed=
         st.error(f"❌ Failed to update task: {e}")
         return None
 
-    return res
+    return resp
 
 
 def delete_task(task_id):
+    """Call DELETE /api/tasks/<id>."""
     try:
-        res = requests.delete(
+        resp = requests.delete(
             f"{API_BASE_URL}/api/tasks/{task_id}",
             headers=HEADERS,
             timeout=10,
@@ -159,170 +148,172 @@ def delete_task(task_id):
         st.error(f"❌ Failed to delete task: {e}")
         return None
 
-    return res
+    return resp
 
-# ------------------- Top Bar -------------------
-top_left, top_right = st.columns([2, 1])
-with top_left:
-    st.info("You can create, filter, edit, complete, and delete tasks here.")
 
-with top_right:
-    if st.button("🔄 Refresh tasks", use_container_width=True):
-        st.session_state["force_reload"] = True
+# ==================== Header ====================
+st.title("📋 KaryaMate Task Dashboard")
+st.write("View and manage your tasks powered by the live KaryaMate API.")
+
+header_left, header_right = st.columns([2, 1])
+with header_left:
+    st.info("You are logged in. Manage your tasks below.")
+with header_right:
+    home_btn = st.button("🏠 Home", use_container_width=True)
+    logout_btn = st.button("🚪 Logout", use_container_width=True)
+
+if home_btn:
+    st.switch_page("home.py")
+
+if logout_btn:
+    st.session_state.clear()
+    st.success("You have been logged out.")
+    st.switch_page("home.py")
 
 st.markdown("---")
 
-# ------------------- Create Task Section -------------------
-st.subheader("➕ New Task")
+# ==================== Create Task Section ====================
+col_left, col_right = st.columns([1, 2])
 
-with st.form("create_task_form", clear_on_submit=True):
-    c1, c2 = st.columns([3, 1])
-    with c1:
-        title = st.text_input("Title *", placeholder="e.g. Finish project report")
-    with c2:
-        priority = st.selectbox("Priority", ["low", "medium", "high"], index=1)
+with col_left:
+    st.subheader("➕ New Task")
 
-    description = st.text_area("Description", height=80, placeholder="Optional notes")
-    due = st.date_input(
-        "Due Date (optional)",
-        value=None,
-        format="YYYY-MM-DD",
-    )
+    with st.form("create_task_form", clear_on_submit=True):
+        title = st.text_input("Title *")
+        description = st.text_area("Description", height=80)
+        priority = st.selectbox("Priority", ["Low", "Medium", "High"])
+        due = st.date_input(
+            "Due Date (optional)",
+            value=None,
+            format="YYYY-MM-DD",
+        )
 
-    submitted = st.form_submit_button("Create Task")
+        submitted = st.form_submit_button("Create Task")
 
-if submitted:
-    if not title.strip():
-        st.warning("Title is required.")
+    if submitted:
+        if not title.strip():
+            st.warning("Title is required.")
+        else:
+            due_value = due if isinstance(due, date) else None
+            create_task(title.strip(), description.strip(), priority, due_value)
+
+# ==================== Task List & Actions ====================
+with col_right:
+    st.subheader("🗂 Your Tasks")
+
+    status_filter = st.selectbox("Filter by status", ["All", "Open", "Completed"])
+    if st.button("🔄 Refresh Tasks"):
+        status_param = "all"
+        if status_filter.lower() == "open":
+            status_param = "open"
+        elif status_filter.lower() == "completed":
+            status_param = "completed"
+        fetch_tasks(status=status_param)
+
+    tasks = st.session_state.tasks
+
+    if not tasks:
+        st.info("No tasks loaded yet. Click **Refresh Tasks** to fetch your tasks.")
     else:
-        due_value = due if isinstance(due, date) else None
-        res = create_task(title.strip(), description.strip(), priority, due_value)
-        if res is not None and res.status_code == 201:
-            st.success("✅ Task created successfully!")
-            st.session_state["force_reload"] = True
-        elif res is not None:
-            try:
-                msg = res.json().get("message", res.text)
-            except Exception:
-                msg = res.text
-            st.error(f"❌ Could not create task ({res.status_code}): {msg}")
-
-st.markdown("---")
-
-# ------------------- Task List + Actions -------------------
-st.subheader("🗂 Your Tasks")
-
-filter_col, _ = st.columns([1, 3])
-with filter_col:
-    status_filter = st.selectbox("Filter by status", ["all", "open", "completed"])
-
-# Fetch tasks each run (or when forced)
-status_param = status_filter.lower()
-tasks, error = fetch_tasks(status_param)
-st.session_state["force_reload"] = False
-
-if error:
-    st.error(error)
-elif not tasks:
-    st.info("No tasks found. Create a new one above!")
-else:
-    # Table view – this is your RED BOX area for the report
-    st.dataframe(
-        [
+        # Summary table
+        table_rows = [
             {
                 "ID": t.get("id"),
                 "Title": t.get("title"),
                 "Priority": t.get("priority"),
                 "Completed": t.get("completed"),
                 "Due Date": t.get("due_date"),
-                "Created": t.get("created_at"),
             }
             for t in tasks
-        ],
-        use_container_width=True,
-        hide_index=True,
-    )
+        ]
+        st.dataframe(table_rows, use_container_width=True, hide_index=True)
 
-    st.markdown("### ✏️ Edit / ✅ Complete / 🗑 Delete")
+        st.markdown("### ✏️ Edit / ✅ Complete / 🗑 Delete")
 
-    # Map tasks by ID
-    task_ids = [t["id"] for t in tasks]
-    task_map = {t["id"]: t for t in tasks}
+        # Map task IDs to task objects
+        task_ids = [t["id"] for t in tasks]
+        task_map = {t["id"]: t for t in tasks}
 
-    selected_id = st.selectbox(
-        "Select a task to modify",
-        task_ids,
-        format_func=lambda i: f"#{i} – {task_map[i]['title']}",
-    )
+        selected_id = st.selectbox(
+            "Select a task to edit",
+            task_ids,
+            format_func=lambda i: f"#{i} – {task_map[i]['title']}",
+        )
+        selected_task = task_map[selected_id]
 
-    selected_task = task_map[selected_id]
+        # Pre-fill editor
+        edit_title = st.text_input("Title", value=selected_task["title"])
+        edit_description = st.text_area(
+            "Description", value=selected_task.get("description") or ""
+        )
 
-    # Pre-fill edit form
-    edit_title = st.text_input("Edit Title", value=selected_task["title"])
-    edit_description = st.text_area("Edit Description", value=selected_task.get("description") or "")
-    edit_priority = st.selectbox(
-        "Edit Priority",
-        ["low", "medium", "high"],
-        index=["low", "medium", "high"].index(selected_task.get("priority", "medium")),
-    )
-    edit_completed = st.checkbox("Completed", value=selected_task.get("completed", False))
+        edit_priority = st.selectbox(
+            "Priority",
+            ["Low", "Medium", "High"],
+            index=["Low", "Medium", "High"].index(
+                (selected_task.get("priority") or "Medium").title()
+            ),
+        )
 
-    # Parse due date
-    existing_due = None
-    if selected_task.get("due_date"):
-        try:
-            existing_due = datetime.fromisoformat(selected_task["due_date"]).date()
-        except Exception:
-            existing_due = None
+        existing_due = None
+        if selected_task.get("due_date"):
+            try:
+                existing_due = datetime.fromisoformat(
+                    selected_task["due_date"]
+                ).date()
+            except Exception:
+                existing_due = None
+        edit_due = st.date_input(
+            "Due date", value=existing_due, format="YYYY-MM-DD"
+        )
 
-    edit_due = st.date_input(
-        "Edit Due Date",
-        value=existing_due,
-        format="YYYY-MM-DD",
-    )
+        edit_completed = st.checkbox(
+            "Completed", value=bool(selected_task.get("completed"))
+        )
 
-    col_u1, col_u2, col_u3 = st.columns(3)
+        col_u1, col_u2, col_u3 = st.columns(3)
 
-    # Save changes
-    with col_u1:
-        if st.button("💾 Save Changes", use_container_width=True):
-            res = update_task(
-                selected_id,
-                title=edit_title.strip(),
-                description=edit_description.strip(),
-                priority=edit_priority,
-                completed=edit_completed,
-                due_date=edit_due,
-            )
-            if res is not None and res.status_code == 200:
-                st.success("✅ Task updated successfully")
-                st.session_state["force_reload"] = True
-            elif res is not None:
-                st.error(f"❌ Failed to update task ({res.status_code}): {res.text}")
+        with col_u1:
+            if st.button("💾 Save Changes", use_container_width=True):
+                resp = update_task(
+                    selected_id,
+                    title=edit_title.strip(),
+                    description=edit_description.strip(),
+                    priority=edit_priority,
+                    completed=edit_completed,
+                    due_date=edit_due,
+                )
+                if resp is not None and resp.status_code == 200:
+                    st.success("Task updated successfully ✅")
+                    fetch_tasks(status=status_filter.lower())
+                    st.experimental_rerun()
+                elif resp is not None:
+                    st.error(f"Failed to update task ({resp.status_code}): {resp.text}")
 
-    # Mark completed
-    with col_u2:
-        if st.button("✅ Mark Completed", use_container_width=True):
-            res = update_task(selected_id, completed=True)
-            if res is not None and res.status_code == 200:
-                st.success("🎉 Task marked as completed")
-                st.session_state["force_reload"] = True
-            elif res is not None:
-                st.error(f"❌ Failed to mark completed ({res.status_code}): {res.text}")
+        with col_u2:
+            if st.button("✅ Mark Completed", use_container_width=True):
+                resp = update_task(selected_id, completed=True)
+                if resp is not None and resp.status_code == 200:
+                    st.success("Task marked as completed 🎉")
+                    fetch_tasks(status=status_filter.lower())
+                    st.experimental_rerun()
+                elif resp is not None:
+                    st.error(
+                        f"Failed to mark task completed ({resp.status_code}): {resp.text}"
+                    )
 
-    # Delete
-    with col_u3:
-        if st.button("🗑 Delete Task", use_container_width=True):
-            res = delete_task(selected_id)
-            if res is not None and res.status_code in (200, 204):
-                st.success("🗑 Task deleted")
-                st.session_state["force_reload"] = True
-            elif res is not None:
-                st.error(f"❌ Failed to delete task ({res.status_code}): {res.text}")
+        with col_u3:
+            if st.button("🗑 Delete Task", use_container_width=True):
+                resp = delete_task(selected_id)
+                if resp is not None and resp.status_code in (200, 204):
+                    st.success("Task deleted 🗑")
+                    fetch_tasks(status=status_filter.lower())
+                    st.experimental_rerun()
+                elif resp is not None:
+                    st.error(f"Failed to delete task ({resp.status_code}): {resp.text}")
 
 st.markdown("---")
 st.caption(
-    f"🔌 This dashboard is powered by the live KaryaMate API: "
-    f"`GET /api/tasks`, `POST /api/tasks`, `PUT /api/tasks/{{id}}`, and `DELETE /api/tasks/{{id}}` "
-    f"at `{API_BASE_URL}`."
+    f"🔌 This dashboard is driven by the live KaryaMate API "
+    f"(`GET/POST /api/tasks`, `PUT/DELETE /api/tasks/{{id}}`) at `{API_BASE_URL}`."
 )
