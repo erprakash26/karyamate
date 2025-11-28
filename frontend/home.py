@@ -327,9 +327,24 @@ st.markdown(
 
 st.markdown(
     """
+    <style>
+    footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 10px 0;
+        background: #f4f4f4;
+        text-align: center;
+        font-size: 14px;
+        color: #555;
+    }
+    </style>
+
     <footer>
         © 2025 KaryaMate — Built with Flask, PostgreSQL, JWT, and Streamlit.
     </footer>
     """,
     unsafe_allow_html=True,
 )
+
