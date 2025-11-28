@@ -191,7 +191,7 @@ header_col_logo, header_col_title, header_col_btns = st.columns([1, 3, 2])
 
 with header_col_logo:
     try:
-        st.image(str(LOGO_PATH), width=80)
+        st.image(str(LOGO_PATH), width=150)
     except Exception:
         st.write(" ")
 
