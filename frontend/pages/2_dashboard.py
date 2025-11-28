@@ -17,8 +17,6 @@ st.set_page_config(
 API_BASE_URL = st.session_state.get(
     "API_BASE_URL",
     "https://karyamate-api.onrender.com",  # deployed backend
-# For local testing, you can temporarily use:
-# API_BASE_URL = "http://127.0.0.1:5000"
 )
 
 # ==================== Auth Guard ====================
@@ -236,7 +234,7 @@ with col_right:
         ]
         st.dataframe(table_rows, use_container_width=True, hide_index=True)
 
-        st.markdown("### ✏️ Update Tasks(Edit/Complete/Delete")
+        st.markdown("### ✏️ Edit / ✅ Complete / 🗑 Delete")
 
         # Map task IDs to task objects
         task_ids = [t["id"] for t in tasks]
