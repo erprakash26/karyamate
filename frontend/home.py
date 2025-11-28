@@ -31,7 +31,7 @@ st.markdown(
 
     /* Make the main content start below the fixed nav bar */
     .block-container {
-        padding-top: 5.5rem !important;  /* adjust if header height changes */
+        padding-top: 0.5rem !important;  /* adjust if header height changes */
     }
 
     /* FIXED top nav with logo + buttons */
