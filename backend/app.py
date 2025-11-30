@@ -1,3 +1,5 @@
+# backend/app.py
+
 from flask import Flask, jsonify
 from flask_cors import CORS
 from flasgger import Swagger
@@ -15,14 +17,38 @@ def create_app():
     # -------------------------------------------------
     # Swagger / Flasgger configuration
     # -------------------------------------------------
+    # This config controls the UI (title, route, etc.)
     app.config["SWAGGER"] = {
         "title": "KaryaMate API",
         "uiversion": 3,
-        # This makes Swagger UI available at /docs
+        # Swagger UI available at /docs
         "specs_route": "/docs/",
     }
 
-    swagger = Swagger(app)
+    # This template adds JWT Bearer auth so the "Authorize" button shows up
+    swagger_template = {
+        "swagger": "2.0",
+        "info": {
+            "title": "KaryaMate API",
+            "description": "API documentation for the KaryaMate task manager.",
+            "version": "0.0.1",
+        },
+        "securityDefinitions": {
+            "BearerAuth": {
+                "type": "apiKey",
+                "name": "Authorization",
+                "in": "header",
+                "description": "JWT Authorization header using the Bearer scheme. "
+                               "Example: 'Bearer {token}'",
+            }
+        },
+        # Optional: if you want all endpoints to *default* to requiring JWT,
+        # uncomment the next line. Otherwise, you can specify security per-endpoint
+        # in your docstrings.
+        # "security": [{"BearerAuth": []}],
+    }
+
+    swagger = Swagger(app, template=swagger_template)
 
     # -------------------------------------------------
     # Init extensions
@@ -33,10 +59,6 @@ def create_app():
 
     # Register blueprints (auth, tasks, …)
     register_routes(app)
-
-    # NEW: ensure tables exist (runs on Render + locally)
-    with app.app_context():
-        db.create_all()
 
     # -------------------------------------------------
     # Routes WITH Swagger docstrings
