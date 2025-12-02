@@ -1,8 +1,15 @@
+# backend/routes/tasks.py
+
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from backend.extensions import db
 from backend.models import Task
-from backend.utils import sanitize_string, parse_bool, parse_priority, parse_datetime
+from backend.utils import (
+    sanitize_string,
+    parse_bool,
+    parse_priority,
+    parse_datetime,
+)
 
 tasks_bp = Blueprint("tasks", __name__, url_prefix="/api/tasks")
 
@@ -34,9 +41,8 @@ def list_tasks():
     parameters:
       - in: query
         name: status
-        schema:
-          type: string
-          enum: [all, open, completed]
+        type: string
+        enum: [all, open, completed]
         required: false
         description: Optional filter by completion status.
     security:
@@ -44,28 +50,26 @@ def list_tasks():
     responses:
       200:
         description: A list of tasks
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  title:
-                    type: string
-                  description:
-                    type: string
-                  completed:
-                    type: boolean
-                  priority:
-                    type: string
-                  due_date:
-                    type: string
-                    format: date-time
-                  user_id:
-                    type: integer
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              title:
+                type: string
+              description:
+                type: string
+              completed:
+                type: boolean
+              priority:
+                type: string
+              due_date:
+                type: string
+                format: date-time
+              user_id:
+                type: integer
     """
     user_id = int(get_jwt_identity())
     status = (request.args.get("status") or "").lower()  # all|open|completed
@@ -92,31 +96,35 @@ def create_task():
     description: Add a new task for the authenticated user.
     security:
       - BearerAuth: []
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - title
-            properties:
-              title:
-                type: string
-                example: Finish Module 5 report
-              description:
-                type: string
-                example: Write final reflection and upload PDF
-              completed:
-                type: boolean
-              priority:
-                type: string
-                enum: [Low, Medium, High]
-                example: High
-              due_date:
-                type: string
-                format: date-time
-                example: "2025-10-01T15:30:00"
+    consumes:
+      - application/json
+    parameters:
+      - in: body
+        name: body
+        description: Task payload
+        required: true
+        schema:
+          type: object
+          required:
+            - title
+          properties:
+            title:
+              type: string
+              example: Finish Module 6 report
+            description:
+              type: string
+              example: Write final reflection and upload PDF
+            completed:
+              type: boolean
+              example: false
+            priority:
+              type: string
+              enum: [Low, Medium, High]
+              example: High
+            due_date:
+              type: string
+              format: date-time
+              example: "2025-11-30T10:00:00"
     responses:
       201:
         description: Task created successfully
@@ -165,8 +173,7 @@ def get_task(task_id):
       - in: path
         name: task_id
         required: true
-        schema:
-          type: integer
+        type: integer
         description: ID of the task
     responses:
       200:
@@ -192,32 +199,38 @@ def update_task(task_id):
     summary: Update an existing task
     security:
       - BearerAuth: []
+    consumes:
+      - application/json
     parameters:
       - in: path
         name: task_id
         required: true
-        schema:
-          type: integer
+        type: integer
         description: ID of the task to update
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              title:
-                type: string
-              description:
-                type: string
-              completed:
-                type: boolean
-              priority:
-                type: string
-                enum: [Low, Medium, High]
-              due_date:
-                type: string
-                format: date-time
+      - in: body
+        name: body
+        description: Fields to update (partial update allowed)
+        required: true
+        schema:
+          type: object
+          properties:
+            title:
+              type: string
+              example: Updated title
+            description:
+              type: string
+              example: Updated description
+            completed:
+              type: boolean
+              example: true
+            priority:
+              type: string
+              enum: [Low, Medium, High]
+              example: Low
+            due_date:
+              type: string
+              format: date-time
+              example: "2025-12-01T16:00:00"
     responses:
       200:
         description: Task updated successfully
@@ -266,8 +279,7 @@ def delete_task(task_id):
       - in: path
         name: task_id
         required: true
-        schema:
-          type: integer
+        type: integer
         description: ID of the task to delete
     responses:
       204:
