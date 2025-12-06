@@ -6,7 +6,7 @@
 
 ## 📌 Overview
 **KaryaMate** is a modern task manager web application designed to help you stay productive, organized, and focused.  
-The name comes from the Sanskrit word **“Karya”** (task/work) combined with **“Mate”**, symbolizing a companion.  
+The name comes from the Nepali/Sanskrit word **“Karya”** (task/work) combined with **“Mate”**, symbolizing a companion.  
 Together, it reflects the app’s purpose: **your smart companion for tasks**.
 
 ---
