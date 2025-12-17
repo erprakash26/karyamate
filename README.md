@@ -152,7 +152,7 @@ streamlit run frontend.py
 
 🔜 API documentation (Swagger/OpenAPI)
 
-🔜 Deployment (Render/Heroku + Streamlit Cloud)
+🔜 Deployment (Render/Heroku + Streamlit Cloud) (compatible with other cloud platforms).
 
 
 
